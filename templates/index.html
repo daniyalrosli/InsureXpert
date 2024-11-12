@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Amount Prediction</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Form container */
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        /* Form input fields */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+
+        input[type="number"],
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Prediction result styling */
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        #predictionResult {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Predict Claim Amount</h1>
+        <form id="predictForm">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+
+            <label for="bmi">BMI:</label>
+            <input type="number" id="bmi" name="bmi" required>
+
+            <label for="bloodpressure">Blood Pressure:</label>
+            <input type="number" id="bloodpressure" name="bloodpressure" required>
+
+            <label for="children">Number of Children:</label>
+            <input type="number" id="children" name="children" required>
+
+            <label for="smoker">Smoker:</label>
+            <select id="smoker" name="smoker" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="region">Region:</label>
+            <input type="text" id="region" name="region" required>
+
+            <input type="submit" value="Predict">
+        </form>
+        <h2>Prediction: <span id="predictionResult">-</span></h2>
+    </div>
+
+    <script>
+        document.getElementById("predictForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                age: parseFloat(formData.get('age')),
+                bmi: parseFloat(formData.get('bmi')),
+                bloodpressure: parseFloat(formData.get('bloodpressure')),
+                children: parseInt(formData.get('children')),
+                smoker: formData.get('smoker'),
+                region: formData.get('region')
+            };
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("predictionResult").textContent = data.prediction;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+
+</html>
